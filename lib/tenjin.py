@@ -761,8 +761,14 @@ class Template(object):
 
     def compile(self):
         """compile self.script into self.bytecode"""
-        self.bytecode = compile(self.script, self.filename or '(tenjin)', 'exec')
+        filename = self.filename
+        if not filename:
+            filename = '(tenjin)'
 
+        if isinstance(filename, unicode):
+            filename = filename.encode('utf8')
+
+        self.bytecode = compile(self.script, filename, 'exec')
 
 ##
 ## preprocessor class
@@ -1189,6 +1195,7 @@ class Engine(object):
            If temlate object related with the 'template_name' argument is not exist,
            engine generates a template object and register it automatically.
         """
+        assert isinstance(template_name, str)
         if context is None:
             context = {}
         if globals is None:
